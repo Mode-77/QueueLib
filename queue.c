@@ -1,13 +1,5 @@
-
 #include <stdlib.h>
-#include <assert.h>
 #include <stdio.h>
-
-struct Person {
-    char const *        name;
-    unsigned short int  age;
-    char const *        occupation;
-};
 
 typedef struct Node {
     void *          data;
@@ -19,16 +11,22 @@ typedef struct Queue {
     size_t  data_size;
 } Queue;
 
-int is_empty(Queue *);
+typedef struct Person {
+    char const *        name;
+    unsigned short int  age;
+    char const *        occupation;
+} Person;
+
 Queue *create_queue();
-void destroy_queue(Queue *);
+void register_new_size(Queue *, size_t data_size);
 void enqueue(Queue *, void *data);
 void *front(Queue *);
 int length(Queue *);
+int is_empty(Queue *);
 void dequeue(Queue *);
 Queue *copy_queue(Queue *);
 void print(Queue *);
-void register_new_size(Queue *, size_t data_size);
+void destroy_queue(Queue *);
 
 int is_empty(Queue *b)
 {
@@ -53,11 +51,12 @@ void destroy_queue(Queue *b)
 
 void enqueue(Queue *b, void *data)
 {
+    Node *new_node = (Node *)malloc(sizeof(Node));
+    new_node->data = malloc(b->data_size);
+    memcpy(new_node->data, data, b->data_size);
+    new_node->next = NULL;
+
     if(is_empty(b)) {
-        Node *new_node = (Node *)malloc(sizeof(Node));
-        new_node->data = malloc(b->data_size);
-        memcpy(new_node->data, data, b->data_size);
-        new_node->next = NULL;
         b->head = new_node;
         return;
     }
@@ -65,10 +64,6 @@ void enqueue(Queue *b, void *data)
     while(n->next != NULL) {
         n = n->next;
     }
-    Node *new_node = (Node *)malloc(sizeof(Node));
-    new_node->data = malloc(b->data_size);
-    memcpy(new_node->data, data, b->data_size);
-    new_node->next = NULL;
     n->next = new_node;
 }
 
@@ -146,14 +141,13 @@ void register_new_size(Queue *b, size_t data_size)
 int main(void)
 {
     Queue *queue = create_queue();
-    struct Person chase = { "Chase", 49, "Banker" };
-    struct Person evan  = { "Evan", 34, "Doctor" };
-    struct Person susie = { "Susie", 43, "Teacher" };
-    register_new_size(queue, sizeof(struct Person));
+    Person chase = { "Chase", 49, "Banker" };
+    Person evan  = { "Evan", 34, "Doctor" };
+    Person susie = { "Susie", 43, "Teacher" };
+    register_new_size(queue, sizeof(Person));
     enqueue(queue, &chase);
     enqueue(queue, &evan);
     enqueue(queue, &susie);
-    printf("length: %d\n", length(queue));
     print(queue);
     dequeue(queue);
     print(queue);
