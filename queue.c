@@ -2,7 +2,7 @@
     Author: Jared Thomas
     Date:   Tuesday, August 2, 2022
     
-     Type-generic queue using singly linked lists
+    Type-generic queue using singly linked lists
 */
 
 #include <stdlib.h>
