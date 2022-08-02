@@ -122,29 +122,24 @@ void print(Queue *b)
         dequeue(copy);
         printf("%c ", d);
     }
+    printf("\n");
     destroy_queue(copy);
 }
 
 int main(void)
 {
     Queue *queue = create_queue();
-
     enqueue(queue, 'a');
     enqueue(queue, 'b');
     enqueue(queue, 'c');
-    printf("%d\n", length(queue));
-
+    printf("length: %d\n", length(queue));
     print(queue);
-    printf("\n");
     dequeue(queue);
     print(queue);
-    printf("\n");
     dequeue(queue);
     print(queue);
-    printf("\n");
     dequeue(queue);
     print(queue);
-    printf("\n");
     destroy_queue(queue);
     return 0;
 }
