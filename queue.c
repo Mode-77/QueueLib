@@ -3,25 +3,32 @@
 #include <assert.h>
 #include <stdio.h>
 
+struct Person {
+    char const *        name;
+    unsigned short int  age;
+    char const *        occupation;
+};
+
 typedef struct Node {
-    char            data;
+    void *          data;
     struct Node *   next;
 } Node;
 
 typedef struct Queue {
-    Node *          head;
+    Node *  head;
+    size_t  data_size;
 } Queue;
 
 int is_empty(Queue *);
 Queue *create_queue();
 void destroy_queue(Queue *);
-void enqueue(Queue *, char);
-char front(Queue *);
+void enqueue(Queue *, void *data);
+void *front(Queue *);
 int length(Queue *);
 void dequeue(Queue *);
 Queue *copy_queue(Queue *);
 void print(Queue *);
-
+void register_new_size(Queue *, size_t data_size);
 
 int is_empty(Queue *b)
 {
@@ -44,12 +51,14 @@ void destroy_queue(Queue *b)
     free(b);
 }
 
-void enqueue(Queue *b, char c)
+void enqueue(Queue *b, void *data)
 {
     if(is_empty(b)) {
-        b->head = (Node *)malloc(sizeof(Node));
-        (b->head)->data = c;
-        (b->head)->next = NULL;
+        Node *new_node = (Node *)malloc(sizeof(Node));
+        new_node->data = malloc(b->data_size);
+        memcpy(new_node->data, data, b->data_size);
+        new_node->next = NULL;
+        b->head = new_node;
         return;
     }
     Node *n = b->head;
@@ -57,12 +66,13 @@ void enqueue(Queue *b, char c)
         n = n->next;
     }
     Node *new_node = (Node *)malloc(sizeof(Node));
-    new_node->data = c;
+    new_node->data = malloc(b->data_size);
+    memcpy(new_node->data, data, b->data_size);
     new_node->next = NULL;
     n->next = new_node;
 }
 
-char front(Queue *b)
+void *front(Queue *b)
 {
     return (b->head)->data;
 }
@@ -70,6 +80,7 @@ char front(Queue *b)
 int length(Queue *b)
 {
     Queue *copy = create_queue();
+    register_new_size(copy, b->data_size);
     int count = 0;
     while(!is_empty(b)) {
         enqueue(copy, front(b));
@@ -94,16 +105,15 @@ void dequeue(Queue *b)
     }
 }
 
-
-
 Queue *copy_queue(Queue *b)
 {
     Queue *copy = create_queue();
+    register_new_size(copy, b->data_size);
     int count = length(b);
     while(count > 0) {
-        char d = front(b);
-        dequeue(b);
+        void *d = front(b);
         enqueue(copy, d);
+        dequeue(b);
         enqueue(b, d);
         count--;
     }
@@ -117,21 +127,32 @@ void print(Queue *b)
         return;
     }
     Queue *copy = copy_queue(b);
+    printf("[");
     while(!is_empty(copy)) {
-        char d = front(copy);
+        struct Person *d = (struct Person *)front(copy);
+        printf("%s, ", d->name);
         dequeue(copy);
-        printf("%c ", d);
     }
+    printf("]");
     printf("\n");
     destroy_queue(copy);
+}
+
+void register_new_size(Queue *b, size_t data_size)
+{
+    b->data_size = data_size;
 }
 
 int main(void)
 {
     Queue *queue = create_queue();
-    enqueue(queue, 'a');
-    enqueue(queue, 'b');
-    enqueue(queue, 'c');
+    struct Person chase = { "Chase", 49, "Banker" };
+    struct Person evan  = { "Evan", 34, "Doctor" };
+    struct Person susie = { "Susie", 43, "Teacher" };
+    register_new_size(queue, sizeof(struct Person));
+    enqueue(queue, &chase);
+    enqueue(queue, &evan);
+    enqueue(queue, &susie);
     printf("length: %d\n", length(queue));
     print(queue);
     dequeue(queue);
