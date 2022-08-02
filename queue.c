@@ -24,16 +24,16 @@ typedef struct Person {
     char const *        occupation;
 } Person;
 
-Queue *create_queue();
-void register_new_size(Queue *, size_t data_size);
-void enqueue(Queue *, void *data);
-void *front(Queue *);
-int length(Queue *);
-int is_empty(Queue *);
-void dequeue(Queue *);
-Queue *copy_queue(Queue *);
-void print(Queue *);
-void destroy_queue(Queue *);
+Queue * create_queue();
+void    register_new_size(Queue *, size_t data_size);
+void    enqueue(Queue *, void *data);
+void *  front(Queue *);
+int     length(Queue *);
+int     is_empty(Queue *);
+void    dequeue(Queue *);
+Queue * copy_queue(Queue *);
+void    print(Queue *);
+void    destroy_queue(Queue *);
 
 int is_empty(Queue *b)
 {
