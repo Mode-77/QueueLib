@@ -120,7 +120,6 @@ void print(Queue *b)
     while(!is_empty(copy)) {
         char d = front(copy);
         dequeue(copy);
-
         printf("%c ", d);
     }
     destroy_queue(copy);
