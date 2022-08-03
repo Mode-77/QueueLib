@@ -38,8 +38,7 @@ void    destroy_queue(Queue *);
 
 int is_empty(Queue *b)
 {
-    if(b->head == NULL) { return 1; }
-    return 0;
+    return b->head == NULL;
 }
 
 Queue *create_queue()
