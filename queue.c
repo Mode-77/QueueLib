@@ -16,6 +16,7 @@ typedef struct Node {
 
 typedef struct Queue {
     Node *  head;
+    Node *  tail;
     size_t  data_size;
     size_t  length;
 } Queue;
@@ -26,7 +27,7 @@ typedef struct Person {
     char const *        occupation;
 } Person;
 
-Queue * create_queue();
+Queue * create_queue(void);
 void    register_new_size(Queue *, size_t data_size);
 void    enqueue(Queue *, void *data);
 void *  front(Queue *);
@@ -36,17 +37,20 @@ void    dequeue(Queue *);
 Queue * copy_queue(Queue *);
 void    print(Queue *);
 void    destroy_queue(Queue *);
+void    destroy_node(Node *);
 
 int is_empty(Queue *b)
 {
     return b->head == NULL;
 }
 
-Queue *create_queue()
+Queue *create_queue(void)
 {
     Queue *new_queue = malloc(sizeof(Queue));
     if(new_queue == NULL) { assert(0); }
     new_queue->head = NULL;
+    new_queue->tail = NULL;
+    new_queue->data_size = 0;
     new_queue->length = 0;
     return new_queue;
 }
@@ -72,18 +76,16 @@ void enqueue(Queue *b, void *data)
 
     if(is_empty(b)) {
         b->head = new_node;
+        b->tail = new_node;
         return;
     }
-    Node *n = b->head;
-    while(n->next != NULL) {
-        n = n->next;
-    }
-    n->next = new_node;
+    b->tail->next = new_node;
+    b->tail = new_node;
 }
 
 void *front(Queue *b)
 {
-    return (b->head)->data;
+    return b->head->data;
 }
 
 size_t length(Queue *b)
@@ -93,10 +95,14 @@ size_t length(Queue *b)
 
 void dequeue(Queue *b)
 {
-    Node *upcoming = b->head->next;
-    free(b->head);
-    b->head = NULL;
-    if(upcoming != NULL) {
+    if(b->head == b->tail) {
+        destroy_node(b->head);
+        b->head = NULL;
+        b->tail = NULL;
+    }
+    else {
+        Node *upcoming = b->head->next;
+        destroy_node(b->head);
         b->head = upcoming;
     }
     (b->length)--;
@@ -105,13 +111,12 @@ void dequeue(Queue *b)
 Queue *copy_queue(Queue *b)
 {
     Queue *copy = create_queue();
-    register_new_size(copy, b->data_size);
+    copy->data_size = b->data_size;
     int count = length(b);
     while(count > 0) {
-        void *d = front(b);
-        enqueue(copy, d);
+        enqueue(copy, front(b));
         dequeue(b);
-        enqueue(b, d);
+        enqueue(b, front(copy));
         count--;
     }
     return copy;
@@ -138,6 +143,12 @@ void print(Queue *b)
 void register_new_size(Queue *b, size_t data_size)
 {
     b->data_size = data_size;
+}
+
+void destroy_node(Node *n)
+{
+    free(n->data);
+    free(n);
 }
 
 int main(void)
