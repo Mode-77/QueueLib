@@ -7,6 +7,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <assert.h>
 
 typedef struct Node {
     void *          data;
@@ -43,7 +44,8 @@ int is_empty(Queue *b)
 
 Queue *create_queue()
 {
-    Queue *new_queue = (Queue *)malloc(sizeof(Queue));
+    Queue *new_queue = malloc(sizeof(Queue));
+    if(new_queue == NULL) { assert(0); }
     new_queue->head = NULL;
     return new_queue;
 }
@@ -58,8 +60,10 @@ void destroy_queue(Queue *b)
 
 void enqueue(Queue *b, void *data)
 {
-    Node *new_node = (Node *)malloc(sizeof(Node));
+    Node *new_node = malloc(sizeof(Node));
+    if(new_node == NULL) { assert(0); }
     new_node->data = malloc(b->data_size);
+    if(new_node->data == NULL) { assert(0); }
     memcpy(new_node->data, data, b->data_size);
     new_node->next = NULL;
 
