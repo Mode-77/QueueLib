@@ -17,6 +17,7 @@ typedef struct Node {
 typedef struct Queue {
     Node *  head;
     size_t  data_size;
+    size_t  length;
 } Queue;
 
 typedef struct Person {
@@ -29,7 +30,7 @@ Queue * create_queue();
 void    register_new_size(Queue *, size_t data_size);
 void    enqueue(Queue *, void *data);
 void *  front(Queue *);
-int     length(Queue *);
+size_t  length(Queue *);
 int     is_empty(Queue *);
 void    dequeue(Queue *);
 Queue * copy_queue(Queue *);
@@ -46,6 +47,7 @@ Queue *create_queue()
     Queue *new_queue = malloc(sizeof(Queue));
     if(new_queue == NULL) { assert(0); }
     new_queue->head = NULL;
+    new_queue->length = 0;
     return new_queue;
 }
 
@@ -66,6 +68,8 @@ void enqueue(Queue *b, void *data)
     memcpy(new_node->data, data, b->data_size);
     new_node->next = NULL;
 
+    (b->length)++;
+
     if(is_empty(b)) {
         b->head = new_node;
         return;
@@ -82,22 +86,9 @@ void *front(Queue *b)
     return (b->head)->data;
 }
 
-int length(Queue *b)
+size_t length(Queue *b)
 {
-    Queue *copy = create_queue();
-    register_new_size(copy, b->data_size);
-    int count = 0;
-    while(!is_empty(b)) {
-        enqueue(copy, front(b));
-        dequeue(b);
-        count++;
-    }
-    while(!is_empty(copy)) {
-        enqueue(b, front(copy));
-        dequeue(copy);
-    }
-    destroy_queue(copy);
-    return count;
+    return b->length;
 }
 
 void dequeue(Queue *b)
@@ -108,6 +99,7 @@ void dequeue(Queue *b)
     if(upcoming != NULL) {
         b->head = upcoming;
     }
+    (b->length)--;
 }
 
 Queue *copy_queue(Queue *b)
