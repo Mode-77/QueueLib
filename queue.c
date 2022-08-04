@@ -32,22 +32,40 @@ void    register_new_size(Queue *, size_t data_size);
 void    enqueue(Queue *, void *data);
 void *  front(Queue *);
 size_t  length(Queue *);
-int     is_empty(Queue *);
 void    dequeue(Queue *);
+int     is_empty(Queue *);
 Queue * copy_queue(Queue *);
 void    print(Queue *);
 void    destroy_queue(Queue *);
-void    destroy_node(Node *);
 
-int is_empty(Queue *b)
+
+
+/*
+    Creates a heap-allocated node.
+    The newly created node has a pointer to 
+    a heap-allocated copy of data.
+*/
+static Node *create_node(void *data, size_t size)
 {
-    return b->head == NULL;
+    Node *new_node = malloc(sizeof(Node));
+    if(new_node == NULL) { return NULL; }
+    new_node->data = malloc(size);
+    if(new_node->data == NULL) { return NULL; }
+    memcpy(new_node->data, data, size);
+    new_node->next = NULL;
+    return new_node;
+}
+
+static void destroy_node(Node *n)
+{
+    free(n->data);
+    free(n);
 }
 
 Queue *create_queue(void)
 {
     Queue *new_queue = malloc(sizeof(Queue));
-    if(new_queue == NULL) { assert(0); }
+    if(new_queue == NULL) { return NULL; }
     new_queue->head = NULL;
     new_queue->tail = NULL;
     new_queue->data_size = 0;
@@ -55,22 +73,18 @@ Queue *create_queue(void)
     return new_queue;
 }
 
-void destroy_queue(Queue *b)
+void register_new_size(Queue *b, size_t data_size)
 {
-    while(!is_empty(b)) {
-        dequeue(b);
-    }
-    free(b);
+    b->data_size = data_size;
 }
 
+/*
+    Input data is not null
+*/
 void enqueue(Queue *b, void *data)
 {
-    Node *new_node = malloc(sizeof(Node));
+    Node *new_node = create_node(data, b->data_size);
     if(new_node == NULL) { assert(0); }
-    new_node->data = malloc(b->data_size);
-    if(new_node->data == NULL) { assert(0); }
-    memcpy(new_node->data, data, b->data_size);
-    new_node->next = NULL;
 
     (b->length)++;
 
@@ -93,6 +107,9 @@ size_t length(Queue *b)
     return b->length;
 }
 
+/*
+    Input queue is not empty
+*/
 void dequeue(Queue *b)
 {
     if(b->head == b->tail) {
@@ -106,6 +123,11 @@ void dequeue(Queue *b)
         b->head = upcoming;
     }
     (b->length)--;
+}
+
+int is_empty(Queue *b)
+{
+    return b->head == NULL;
 }
 
 Queue *copy_queue(Queue *b)
@@ -140,20 +162,20 @@ void print(Queue *b)
     destroy_queue(copy);
 }
 
-void register_new_size(Queue *b, size_t data_size)
+void destroy_queue(Queue *b)
 {
-    b->data_size = data_size;
+    while(!is_empty(b)) {
+        dequeue(b);
+    }
+    free(b);
 }
 
-void destroy_node(Node *n)
-{
-    free(n->data);
-    free(n);
-}
+
 
 int main(void)
 {
     Queue *queue = create_queue();
+    if(queue == NULL) { assert(0); }
     Person chase = { "Chase", 49, "Banker" };
     Person evan  = { "Evan", 34, "Doctor" };
     Person susie = { "Susie", 43, "Teacher" };
