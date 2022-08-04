@@ -33,6 +33,7 @@ void    enqueue(Queue *, void *data);
 void *  front(Queue *);
 size_t  length(Queue *);
 void    dequeue(Queue *);
+void    clear(Queue *);
 int     is_empty(Queue *);
 Queue * copy_queue(Queue *);
 void    print(Queue *);
@@ -125,6 +126,13 @@ void dequeue(Queue *b)
     (b->length)--;
 }
 
+void clear(Queue *b)
+{
+    while(!is_empty(b)) {
+        dequeue(b);
+    }
+}
+
 int is_empty(Queue *b)
 {
     return b->head == NULL;
@@ -164,9 +172,7 @@ void print(Queue *b)
 
 void destroy_queue(Queue *b)
 {
-    while(!is_empty(b)) {
-        dequeue(b);
-    }
+    clear(b);
     free(b);
 }
 
