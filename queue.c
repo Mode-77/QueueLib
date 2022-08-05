@@ -1,8 +1,8 @@
 /*
     Author: Jared Thomas
-    Date:   Tuesday, August 2, 2022
+    Date:   Tuesday, August 5, 2022
     
-    Type-generic queue using singly linked lists
+    Type-generic queue using singly linked lists [Rev. 2]
 */
 
 #include <stdlib.h>
