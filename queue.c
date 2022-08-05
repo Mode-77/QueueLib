@@ -11,13 +11,13 @@
 
 typedef struct Node {
     void *          data;
+    size_t          data_size;
     struct Node *   next;
 } Node;
 
 typedef struct Queue {
     Node *  head;
     Node *  tail;
-    size_t  data_size;
     size_t  length;
 } Queue;
 
@@ -28,9 +28,9 @@ typedef struct Person {
 } Person;
 
 Queue * create_queue(void);
-void    register_new_size(Queue *, size_t data_size);
-void    enqueue(Queue *, void *data);
+void    enqueue(Queue *, void *data, size_t data_size);
 void *  front(Queue *);
+size_t  front_size(Queue const *);
 size_t  length(Queue *);
 void    dequeue(Queue *);
 void    clear(Queue *);
@@ -45,18 +45,27 @@ void    destroy_queue(Queue *);
     Creates a heap-allocated node.
     The newly created node has a pointer to 
     a heap-allocated copy of data.
+
+    Internal use only
 */
 static Node *create_node(void *data, size_t size)
 {
     Node *new_node = malloc(sizeof(Node));
     if(new_node == NULL) { return NULL; }
-    new_node->data = malloc(size);
+    new_node->data_size = size;
+    new_node->data = malloc(new_node->data_size);
     if(new_node->data == NULL) { return NULL; }
-    memcpy(new_node->data, data, size);
+    memcpy(new_node->data, data, new_node->data_size);
     new_node->next = NULL;
     return new_node;
 }
 
+/*  
+    Frees memory occupied by the node's data
+    and the node itself
+
+    Internal use only
+*/
 static void destroy_node(Node *n)
 {
     free(n->data);
@@ -69,22 +78,16 @@ Queue *create_queue(void)
     if(new_queue == NULL) { return NULL; }
     new_queue->head = NULL;
     new_queue->tail = NULL;
-    new_queue->data_size = 0;
     new_queue->length = 0;
     return new_queue;
-}
-
-void register_new_size(Queue *b, size_t data_size)
-{
-    b->data_size = data_size;
 }
 
 /*
     Input data is not null
 */
-void enqueue(Queue *b, void *data)
+void enqueue(Queue *b, void *data, size_t data_size)
 {
-    Node *new_node = create_node(data, b->data_size);
+    Node *new_node = create_node(data, data_size);
     if(new_node == NULL) { assert(0); }
 
     (b->length)++;
@@ -101,6 +104,11 @@ void enqueue(Queue *b, void *data)
 void *front(Queue *b)
 {
     return b->head->data;
+}
+
+size_t front_size(Queue const *b)
+{
+    return b->head->data_size;
 }
 
 size_t length(Queue *b)
@@ -141,12 +149,11 @@ int is_empty(Queue *b)
 Queue *copy_queue(Queue *b)
 {
     Queue *copy = create_queue();
-    copy->data_size = b->data_size;
     int count = length(b);
     while(count > 0) {
-        enqueue(copy, front(b));
+        enqueue(copy, front(b), front_size(b));
         dequeue(b);
-        enqueue(b, front(copy));
+        enqueue(b, front(copy), front_size(copy));
         count--;
     }
     return copy;
@@ -185,10 +192,9 @@ int main(void)
     Person chase = { "Chase", 49, "Banker" };
     Person evan  = { "Evan", 34, "Doctor" };
     Person susie = { "Susie", 43, "Teacher" };
-    register_new_size(queue, sizeof(Person));
-    enqueue(queue, &chase);
-    enqueue(queue, &evan);
-    enqueue(queue, &susie);
+    enqueue(queue, &chase, sizeof(Person));
+    enqueue(queue, &evan, sizeof(Person));
+    enqueue(queue, &susie, sizeof(Person));
     print(queue);
     dequeue(queue);
     print(queue);
