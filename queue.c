@@ -1,6 +1,6 @@
 /*
     Author: Jared Thomas
-    Date:   Tuesday, August 5, 2022
+    Date:   Friday, August 5, 2022
     
     Type-generic queue using singly linked lists [Rev. 2]
 */
