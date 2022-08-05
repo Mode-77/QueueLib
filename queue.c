@@ -31,10 +31,10 @@ Queue * create_queue(void);
 void    enqueue(Queue *, void *data, size_t data_size);
 void *  front(Queue *);
 size_t  front_size(Queue const *);
-size_t  length(Queue *);
+size_t  length(Queue const *);
 void    dequeue(Queue *);
 void    clear(Queue *);
-int     is_empty(Queue *);
+int     is_empty(Queue const *);
 Queue * copy_queue(Queue *);
 void    print(Queue *);
 void    destroy_queue(Queue *);
@@ -111,7 +111,7 @@ size_t front_size(Queue const *b)
     return b->head->data_size;
 }
 
-size_t length(Queue *b)
+size_t length(Queue const *b)
 {
     return b->length;
 }
@@ -141,7 +141,7 @@ void clear(Queue *b)
     }
 }
 
-int is_empty(Queue *b)
+int is_empty(Queue const *b)
 {
     return b->head == NULL;
 }
