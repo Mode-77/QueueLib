@@ -1,7 +1,7 @@
 /*
     Author: Jared Thomas
     Date:   Friday, August 5, 2022
-    
+
     Type-generic queue using singly linked lists [Rev. 2]
 */
 
@@ -35,7 +35,7 @@ size_t  length(Queue const *);
 void    dequeue(Queue *);
 void    clear(Queue *);
 int     is_empty(Queue const *);
-Queue * copy_queue(Queue *);
+Queue * copy_queue(Queue const *);
 void    print(Queue *);
 void    destroy_queue(Queue *);
 
@@ -43,7 +43,7 @@ void    destroy_queue(Queue *);
 
 /*
     Creates a heap-allocated node.
-    The newly created node has a pointer to 
+    The newly created node has a pointer to
     a heap-allocated copy of data.
 
     Internal use only
@@ -54,13 +54,21 @@ static Node *create_node(void *data, size_t size)
     if(new_node == NULL) { return NULL; }
     new_node->data_size = size;
     new_node->data = malloc(new_node->data_size);
-    if(new_node->data == NULL) { return NULL; }
+    if(new_node->data == NULL) {
+        free(new_node);
+        return NULL;
+    }
     memcpy(new_node->data, data, new_node->data_size);
     new_node->next = NULL;
     return new_node;
 }
 
-/*  
+static Node *copy_node(Node const *n)
+{
+    return create_node(n->data, n->data_size);
+}
+
+/*
     Frees memory occupied by the node's data
     and the node itself
 
@@ -146,15 +154,13 @@ int is_empty(Queue const *b)
     return b->head == NULL;
 }
 
-Queue *copy_queue(Queue *b)
+Queue *copy_queue(Queue const *b)
 {
     Queue *copy = create_queue();
-    int count = length(b);
-    while(count > 0) {
-        enqueue(copy, front(b), front_size(b));
-        dequeue(b);
-        enqueue(b, front(copy), front_size(copy));
-        count--;
+    Node *n = b->head;
+    while(n != NULL) {
+        enqueue(copy, n->data, n->data_size);
+        n = n->next;
     }
     return copy;
 }
