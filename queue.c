@@ -20,6 +20,8 @@
     Type-generic queue using singly linked lists
 */
 
+#include "dxqueue.h"
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
@@ -35,24 +37,6 @@ typedef struct Queue {
     Node *  tail;
     size_t  length;
 } Queue;
-
-typedef struct Person {
-    char const *        name;
-    unsigned short int  age;
-    char const *        occupation;
-} Person;
-
-Queue * create_queue(void);
-void    enqueue(Queue *, void *data, size_t data_size);
-void *  front(Queue *);
-size_t  front_size(Queue const *);
-size_t  length(Queue const *);
-void    dequeue(Queue *);
-void    clear(Queue *);
-int     is_empty(Queue const *);
-Queue * copy_queue(Queue const *);
-void    print(Queue *);
-void    destroy_queue(Queue *);
 
 
 
@@ -182,47 +166,11 @@ Queue *copy_queue(Queue const *b)
 
 void print(Queue *b)
 {
-    if(is_empty(b)) {
-        printf("[empty]\n");
-        return;
-    }
-    Queue *copy = copy_queue(b);
-    printf("[");
-    while(!is_empty(copy)) {
-        struct Person *d = (struct Person *)front(copy);
-        printf("%s, ", d->name);
-        dequeue(copy);
-    }
-    printf("]");
-    printf("\n");
-    destroy_queue(copy);
+
 }
 
 void destroy_queue(Queue *b)
 {
     clear(b);
     free(b);
-}
-
-
-
-int main(void)
-{
-    Queue *queue = create_queue();
-    if(queue == NULL) { assert(0); }
-    Person chase = { "Chase", 49, "Banker" };
-    Person evan  = { "Evan", 34, "Doctor" };
-    Person susie = { "Susie", 43, "Teacher" };
-    enqueue(queue, &chase, sizeof(Person));
-    enqueue(queue, &evan, sizeof(Person));
-    enqueue(queue, &susie, sizeof(Person));
-    print(queue);
-    dequeue(queue);
-    print(queue);
-    dequeue(queue);
-    print(queue);
-    dequeue(queue);
-    print(queue);
-    destroy_queue(queue);
-    return 0;
 }
