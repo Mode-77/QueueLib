@@ -1,6 +1,8 @@
 #ifndef DXQUEUE_H
 #define DXQUEUE_H
 
+#include <stdlib.h>
+
 typedef struct Queue Queue;
 
 Queue * create_queue(void);

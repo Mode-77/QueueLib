@@ -1,0 +1,13 @@
+LIBRARY     DXQueue
+EXPORTS
+            create_queue    @1
+            enqueue         @2
+            front           @3
+            front_size      @4
+            length          @5
+            dequeue         @6
+            clear           @7
+            is_empty        @8
+            copy_queue      @9
+            print           @10
+            destroy_queue   @11
