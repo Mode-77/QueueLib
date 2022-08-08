@@ -1,6 +1,7 @@
 #include <stdlib.h>
+#include <assert.h>
 
-#include "dxqueue.h"
+#include "..\DXQueue\dxqueue.h"
 
 typedef struct Person {
     char const *        name;
